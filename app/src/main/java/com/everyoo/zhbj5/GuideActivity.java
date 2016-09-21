@@ -1,11 +1,13 @@
 package com.everyoo.zhbj5;
 
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -18,13 +20,46 @@ public class GuideActivity extends AppCompatActivity {
     };
     private ArrayList<ImageView> imageViewArrayList;
 
+    private Button startBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
         viewPager = (ViewPager) findViewById(R.id.vp_guide);
+        startBtn = (Button) findViewById(R.id.button);
         intView();
         viewPager.setAdapter(new GuideAdapter());
+
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 2) {
+                    startBtn.setVisibility(View.VISIBLE);
+                }
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(GuideActivity.this, MainActivity.class));
+                finish();
+            }
+        });
 
 
     }
