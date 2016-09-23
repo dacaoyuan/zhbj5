@@ -26,5 +26,6 @@ public class SmartServicePager extends BasePager {
         TextView textView = new TextView(mActivity);
         textView.setText("我是服务");
         frameLayout.addView(textView);
+        setSlidingMenuEnable(true);
     }
 }

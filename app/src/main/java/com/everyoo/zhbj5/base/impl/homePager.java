@@ -1,6 +1,7 @@
 package com.everyoo.zhbj5.base.impl;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.TextView;
 
 import com.everyoo.zhbj5.base.BasePager;
@@ -26,5 +27,7 @@ public class HomePager extends BasePager {
         TextView textView = new TextView(mActivity);
         textView.setText("我是首页");
         frameLayout.addView(textView);
+        imageButton.setVisibility(View.GONE);
+        setSlidingMenuEnable(false);
     }
 }

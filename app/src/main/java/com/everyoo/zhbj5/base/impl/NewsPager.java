@@ -26,5 +26,6 @@ public class NewsPager extends BasePager {
         TextView textView = new TextView(mActivity);
         textView.setText("我是新闻");
         frameLayout.addView(textView);
+        setSlidingMenuEnable(true);
     }
 }

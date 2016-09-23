@@ -71,19 +71,19 @@ public class ContentMenuFregment extends BaseFregment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.rb_home:
-                        viewPager.setCurrentItem(0);
+                        viewPager.setCurrentItem(0,false);
                         break;
                     case R.id.rb_news:
-                        viewPager.setCurrentItem(1);
+                        viewPager.setCurrentItem(1,false);
                         break;
                     case R.id.rb_smart:
-                        viewPager.setCurrentItem(2);
+                        viewPager.setCurrentItem(2,false);
                         break;
                     case R.id.rb_gov:
-                        viewPager.setCurrentItem(3);
+                        viewPager.setCurrentItem(3,false);
                         break;
                     case R.id.rb_setting:
-                        viewPager.setCurrentItem(4);
+                        viewPager.setCurrentItem(4,false);
                         break;
                     default:
                         break;
@@ -91,6 +91,24 @@ public class ContentMenuFregment extends BaseFregment {
             }
         });
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                basePagersList.get(position).initData();
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
 
@@ -112,7 +130,6 @@ public class ContentMenuFregment extends BaseFregment {
         public Object instantiateItem(ViewGroup container, int position) {
             BasePager pager = basePagersList.get(position);
             container.addView(basePagersList.get(position).rootView);
-            pager.initData();
             return basePagersList.get(position).rootView;
         }
 

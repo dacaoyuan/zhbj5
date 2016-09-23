@@ -26,5 +26,6 @@ public class GovAffairsPager extends BasePager {
         TextView textView = new TextView(mActivity);
         textView.setText("我是政务");
         frameLayout.addView(textView);
+        setSlidingMenuEnable(true);
     }
 }
