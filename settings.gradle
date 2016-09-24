@@ -1,1 +1,1 @@
-include ':app', ':slidngMunelibrary'
+include ':app', ':slidingMenulibrary'
