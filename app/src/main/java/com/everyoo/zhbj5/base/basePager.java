@@ -14,7 +14,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 /**
  * Created by Administrator on 2016-9-22.
  */
-public class basePager {
+public class BasePager {
 
     public Activity mActivity;
     public View rootView;
@@ -24,7 +24,7 @@ public class basePager {
     public ImageButton imageButton;
 
 
-    public basePager(Activity activity) {
+    public BasePager(Activity activity) {
         mActivity = activity;
         initViews();
 
