@@ -7,8 +7,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.everyoo.zhbj5.base.BasePager;
+import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.global.GlobalContants;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -60,6 +64,18 @@ public class NewsPager extends BasePager {
             public void onSuccess(String result) {
 
                 Log.i(TAG, "onSuccess: result=" + result);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    int code = jsonObject.getInt("retcode");
+                    Log.i(TAG, "onSuccess: code=" + code);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                parseData(result);
+
                 progressdialog.cancel();
             }
 
@@ -80,6 +96,13 @@ public class NewsPager extends BasePager {
             }
         });
 
+
+    }
+
+    private void parseData(String result) {
+        Gson gson = new Gson();
+        NewsData newsData = gson.fromJson(result, NewsData.class);
+        Log.i(TAG, "parseData: newsData=" + newsData);
 
     }
 
