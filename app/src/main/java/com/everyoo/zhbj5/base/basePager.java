@@ -17,7 +17,6 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 public class BasePager {
 
     public Activity mActivity;
-
     public View rootView;
 
     public FrameLayout frameLayout;
@@ -28,6 +27,8 @@ public class BasePager {
     public BasePager(Activity activity) {
         mActivity = activity;
         initViews();
+
+
     }
 
 
