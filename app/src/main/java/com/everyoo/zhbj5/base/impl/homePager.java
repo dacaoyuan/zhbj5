@@ -19,6 +19,7 @@ public class HomePager extends BasePager {
     public void initViews() {
         super.initViews();
 
+
     }
 
     @Override

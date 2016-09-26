@@ -5,7 +5,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.RadioGroup;
 
 import com.everyoo.zhbj5.R;
@@ -48,7 +47,7 @@ public class ContentMenuFregment extends BaseFregment {
 
     @Override
     public void initDate() {
-        radioGroup.check(R.id.rb_news);
+        radioGroup.check(R.id.rb_home);
 
         basePagersList = new ArrayList<>();
         /*for (int i = 0; i < 5; i++) {
@@ -65,7 +64,6 @@ public class ContentMenuFregment extends BaseFregment {
 
 
         viewPager.setAdapter(new MyContentAdapter());
-        viewPager.setCurrentItem(1);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -109,6 +107,8 @@ public class ContentMenuFregment extends BaseFregment {
 
             }
         });
+
+        basePagersList.get(0).initData();
 
     }
 
