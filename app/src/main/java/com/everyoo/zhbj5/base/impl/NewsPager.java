@@ -6,8 +6,10 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.everyoo.zhbj5.MainActivity;
 import com.everyoo.zhbj5.base.BasePager;
 import com.everyoo.zhbj5.domain.NewsData;
+import com.everyoo.zhbj5.fragment.LeftMenuFregment;
 import com.everyoo.zhbj5.global.GlobalContants;
 import com.google.gson.Gson;
 
@@ -33,6 +35,7 @@ public class NewsPager extends BasePager {
     @Override
     public void initViews() {
         super.initViews();
+
 
     }
 
@@ -103,6 +106,10 @@ public class NewsPager extends BasePager {
         Gson gson = new Gson();
         NewsData newsData = gson.fromJson(result, NewsData.class);
         Log.i(TAG, "parseData: newsData=" + newsData);
+        MainActivity mainUI = (MainActivity) mActivity;
+        LeftMenuFregment leftMenuFregment = mainUI.leftMenuFregment();
+        leftMenuFregment.setNewsData(newsData);
+
 
     }
 

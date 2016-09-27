@@ -20,6 +20,7 @@ public class HomePager extends BasePager {
         super.initViews();
 
 
+
     }
 
     @Override

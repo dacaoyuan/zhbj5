@@ -11,6 +11,9 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class MainActivity extends SlidingFragmentActivity {
 
+    private static final String LEFTTAG = "leftMenuTag";
+    private static final String RIGHTTAG = "rightMenuTag";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,9 +31,19 @@ public class MainActivity extends SlidingFragmentActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.left_men, new LeftMenuFregment());
-        transaction.replace(R.id.content_men, new ContentMenuFregment());
+        transaction.replace(R.id.left_men, new LeftMenuFregment(), LEFTTAG);
+        transaction.replace(R.id.content_men, new ContentMenuFregment(), RIGHTTAG);
         transaction.commit();
-
     }
+
+    public LeftMenuFregment leftMenuFregment() {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        LeftMenuFregment leftMenuFregment = (LeftMenuFregment) fragmentManager.findFragmentByTag(LEFTTAG);
+
+
+        return leftMenuFregment;
+    }
+
+
 }
