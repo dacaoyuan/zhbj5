@@ -27,7 +27,6 @@ public class BasePager {
     public BasePager(Activity activity) {
         mActivity = activity;
         initViews();
-
     }
 
 
