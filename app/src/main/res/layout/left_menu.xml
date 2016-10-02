@@ -1,0 +1,7 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/left_men"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b96161">
+
+</FrameLayout>
