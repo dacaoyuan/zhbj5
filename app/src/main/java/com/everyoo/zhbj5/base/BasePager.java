@@ -37,8 +37,6 @@ public class BasePager {
         tvTile = (TextView) rootView.findViewById(R.id.tv_title);
         imageButton = (ImageButton) rootView.findViewById(R.id.btn_menu);
 
-
-
     }
 
 
