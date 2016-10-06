@@ -69,19 +69,19 @@ public class ContentMenuFregment extends BaseFregment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.rb_home:
-                        viewPager.setCurrentItem(0,false);
+                        viewPager.setCurrentItem(0, false);
                         break;
                     case R.id.rb_news:
-                        viewPager.setCurrentItem(1,false);
+                        viewPager.setCurrentItem(1, false);
                         break;
                     case R.id.rb_smart:
-                        viewPager.setCurrentItem(2,false);
+                        viewPager.setCurrentItem(2, false);
                         break;
                     case R.id.rb_gov:
-                        viewPager.setCurrentItem(3,false);
+                        viewPager.setCurrentItem(3, false);
                         break;
                     case R.id.rb_setting:
-                        viewPager.setCurrentItem(4,false);
+                        viewPager.setCurrentItem(4, false);
                         break;
                     default:
                         break;
@@ -137,6 +137,11 @@ public class ContentMenuFregment extends BaseFregment {
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
         }
+    }
+
+
+    public NewsPager newsPager() {
+        return (NewsPager) basePagersList.get(1);
     }
 
 

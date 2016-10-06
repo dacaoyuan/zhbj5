@@ -8,11 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.everyoo.zhbj5.R;
 import com.everyoo.zhbj5.base.BasePager;
@@ -58,6 +60,14 @@ public class GovAffairsPager extends BasePager {
 
         listView = (ListView) view.findViewById(R.id.gov_list);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(mActivity,arrayList.get(position),Toast.LENGTH_LONG).show();
+            }
+        });
+
+
 
         getFromService();
     }
@@ -65,7 +75,7 @@ public class GovAffairsPager extends BasePager {
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            frameLayout.removeView(view);
+            frameLayout.removeAllViews();
             frameLayout.addView(view);
             System.out.println("GovAffairsPager.handleMessage");
           /*  ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<String>(mActivity, R.layout.gov_list_item, arrayList);
@@ -177,7 +187,6 @@ public class GovAffairsPager extends BasePager {
 
         if (govAffairsData.getMsgCode() == 1) {
             arrayList = new ArrayList<>();
-            arrayList.clear();
             for (int i = 0; i < govAffairsData.getEntity().size(); i++) {
                 arrayList.add(govAffairsData.getEntity().get(i).getNickName());
             }

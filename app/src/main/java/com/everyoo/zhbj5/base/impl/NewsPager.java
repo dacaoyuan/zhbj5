@@ -7,7 +7,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.everyoo.zhbj5.MainActivity;
+import com.everyoo.zhbj5.base.BaseMenuDetailPager;
 import com.everyoo.zhbj5.base.BasePager;
+import com.everyoo.zhbj5.base.menudetail.InteractMenuDetailPager;
+import com.everyoo.zhbj5.base.menudetail.NewsMenuDetailPager;
+import com.everyoo.zhbj5.base.menudetail.PhotoMenuDetailPager;
+import com.everyoo.zhbj5.base.menudetail.TopicMenuDetailPager;
 import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.fragment.LeftMenuFregment;
 import com.everyoo.zhbj5.global.GlobalContants;
@@ -19,6 +24,8 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.ArrayList;
+
 /**
  * Created by Administrator on 2016-9-22.
  */
@@ -27,6 +34,9 @@ public class NewsPager extends BasePager {
     private final String TAG = "NewsPager ";
 
     private ProgressDialog progressdialog;
+
+    public ArrayList<BaseMenuDetailPager> baseMenuDetailArrayList;
+    private NewsData newsData;
 
     public NewsPager(Activity activity) {
         super(activity);
@@ -42,15 +52,31 @@ public class NewsPager extends BasePager {
     @Override
     public void initData() {
         tvTile.setText("新闻");
-        TextView textView = new TextView(mActivity);
-        textView.setText("我是新闻");
-        frameLayout.addView(textView);
         setSlidingMenuEnable(true);
 
         getDataFromService();
 
+        baseMenuDetailArrayList = new ArrayList<>();
+        baseMenuDetailArrayList.add(new NewsMenuDetailPager(mActivity));
+        baseMenuDetailArrayList.add(new TopicMenuDetailPager(mActivity));
+        baseMenuDetailArrayList.add(new PhotoMenuDetailPager(mActivity));
+        baseMenuDetailArrayList.add(new InteractMenuDetailPager(mActivity));
+
+
+        frameLayout.addView(baseMenuDetailArrayList.get(0).mRootView);
+
 
     }
+
+    public void setCurrentMenuDetailPager(int position) {
+        BaseMenuDetailPager baseMenuDetailPager = baseMenuDetailArrayList.get(position);
+        frameLayout.removeAllViews();
+        frameLayout.addView(baseMenuDetailPager.mRootView);
+
+        tvTile.setText(newsData.data.get(position).title);
+
+    }
+
 
     private void getDataFromService() {
 
@@ -104,11 +130,14 @@ public class NewsPager extends BasePager {
 
     private void parseData(String result) {
         Gson gson = new Gson();
-        NewsData newsData = gson.fromJson(result, NewsData.class);
+        newsData = gson.fromJson(result, NewsData.class);
         Log.i(TAG, "parseData: newsData=" + newsData);
         MainActivity mainUI = (MainActivity) mActivity;
         LeftMenuFregment leftMenuFregment = mainUI.leftMenuFregment();
         leftMenuFregment.setNewsData(newsData);
+
+
+
 
 
     }

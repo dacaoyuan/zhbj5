@@ -36,13 +36,27 @@ public class BasePager {
         frameLayout = (FrameLayout) rootView.findViewById(R.id.fl_content);
         tvTile = (TextView) rootView.findViewById(R.id.tv_title);
         imageButton = (ImageButton) rootView.findViewById(R.id.btn_menu);
-
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleSlidingMenu();
+            }
+        });
     }
 
 
     public void initData() {
     }
 
+
+    /**
+     * Toggle the SlidingMenu. If it is open, it will be closed, and vice versa(反之亦然).
+     */
+    private void toggleSlidingMenu() {
+        MainActivity mainUi = (MainActivity) mActivity;
+        SlidingMenu slidingMenu = mainUi.getSlidingMenu();
+        slidingMenu.toggle();
+    }
 
 
     public void setSlidingMenuEnable(boolean enable) {
