@@ -56,24 +56,6 @@ public class NewsPager extends BasePager {
 
         getDataFromService();
 
-        baseMenuDetailArrayList = new ArrayList<>();
-        baseMenuDetailArrayList.add(new NewsMenuDetailPager(mActivity));
-        baseMenuDetailArrayList.add(new TopicMenuDetailPager(mActivity));
-        baseMenuDetailArrayList.add(new PhotoMenuDetailPager(mActivity));
-        baseMenuDetailArrayList.add(new InteractMenuDetailPager(mActivity));
-
-
-        frameLayout.addView(baseMenuDetailArrayList.get(0).mRootView);
-
-
-    }
-
-    public void setCurrentMenuDetailPager(int position) {
-        BaseMenuDetailPager baseMenuDetailPager = baseMenuDetailArrayList.get(position);
-        frameLayout.removeAllViews();
-        frameLayout.addView(baseMenuDetailPager.mRootView);
-
-        tvTile.setText(newsData.data.get(position).title);
 
     }
 
@@ -136,9 +118,27 @@ public class NewsPager extends BasePager {
         LeftMenuFregment leftMenuFregment = mainUI.leftMenuFregment();
         leftMenuFregment.setNewsData(newsData);
 
+        baseMenuDetailArrayList = new ArrayList<>();
+        baseMenuDetailArrayList.add(new NewsMenuDetailPager(mActivity, newsData.data.get(0).children));
+        baseMenuDetailArrayList.add(new TopicMenuDetailPager(mActivity));
+        baseMenuDetailArrayList.add(new PhotoMenuDetailPager(mActivity));
+        baseMenuDetailArrayList.add(new InteractMenuDetailPager(mActivity));
 
 
+        //frameLayout.addView(baseMenuDetailArrayList.get(0).mRootView);
+        setCurrentMenuDetailPager(0);
 
+    }
+
+
+    public void setCurrentMenuDetailPager(int position) {
+        BaseMenuDetailPager baseMenuDetailPager = baseMenuDetailArrayList.get(position);
+        frameLayout.removeAllViews();
+        frameLayout.addView(baseMenuDetailPager.mRootView);
+
+        tvTile.setText(newsData.data.get(position).title);
+
+        baseMenuDetailPager.initData();
 
     }
 
