@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <com.viewpagerindicator.TabPageIndicator
             android:id="@+id/indicator"
@@ -25,7 +25,7 @@
             android:src="@mipmap/news_cate_arr" />
     </LinearLayout>
 
-    <android.support.v4.view.ViewPager
+    <com.everyoo.zhbj5.view.HorizontalViewPager
         android:id="@+id/vp_menu_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
