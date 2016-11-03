@@ -22,8 +22,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GuideActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        android:name=".GuideActivity"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/Theme.PageIndicatorDefaults"/>

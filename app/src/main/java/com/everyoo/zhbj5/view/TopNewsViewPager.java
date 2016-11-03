@@ -25,7 +25,7 @@ public class TopNewsViewPager extends ViewPager {
 	}
 
 	/**
-	 * 事件分发, 请求父控件及祖宗控件是否拦截事件 1. 右划, 而且是第一个页面, 需要父控件拦截 2. 左划, 而且是最后一个页面, 需要父控件拦截
+	 * 事件分发, 请求父控件及祖宗控件是否拦截事件 1. 右划, 而且是第一个页面, 需要父控件拦截，页面就能滑出 2. 左划, 而且是最后一个页面, 需要父控件拦截
 	 * 3. 上下滑动, 需要父控件拦截
 	 */
 	@Override
@@ -44,7 +44,7 @@ public class TopNewsViewPager extends ViewPager {
 
 			if (Math.abs(endX - startX) > Math.abs(endY - startY)) {// 左右滑动
 				if (endX > startX) {// 右划
-					if (getCurrentItem() == 0) {// 第一个页面, 需要父控件拦截
+					if (getCurrentItem() == 0) {// 第一个页面, 需要父控件拦截，父控件页面就能滑出
 						getParent().requestDisallowInterceptTouchEvent(false);
 					}
 				} else {// 左划

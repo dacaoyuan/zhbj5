@@ -25,7 +25,7 @@
             android:src="@mipmap/news_cate_arr" />
     </LinearLayout>
 
-    <com.everyoo.zhbj5.view.HorizontalViewPager
+    <android.support.v4.view.ViewPager
         android:id="@+id/vp_menu_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

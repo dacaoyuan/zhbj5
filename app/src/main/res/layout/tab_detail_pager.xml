@@ -7,7 +7,7 @@
     <com.everyoo.zhbj5.view.TopNewsViewPager
         android:id="@+id/vp_news"
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="200dp">
 
     </com.everyoo.zhbj5.view.TopNewsViewPager>
 
