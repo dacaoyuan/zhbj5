@@ -82,6 +82,17 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
         x.view().inject(this, headerView);
 
         listView.addHeaderView(headerView);
+        listView.setOnRefreshListener(new RefreshListView.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getDataFromServer();
+            }
+
+            @Override
+            public void onLoadMore() {
+
+            }
+        });
 
         return view;
     }
@@ -113,6 +124,7 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                listView.onRefreshComplete(true);
                 progressdialog.cancel();
             }
 
