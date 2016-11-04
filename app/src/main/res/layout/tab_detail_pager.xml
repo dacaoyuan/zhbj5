@@ -4,18 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.everyoo.zhbj5.view.TopNewsViewPager
-        android:id="@+id/vp_news"
-        android:layout_width="match_parent"
-        android:layout_height="200dp">
 
-    </com.everyoo.zhbj5.view.TopNewsViewPager>
-
-    <ListView
+    <com.everyoo.zhbj5.view.RefreshListView
         android:id="@+id/lv_list"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="1"></ListView>
+        android:layout_weight="1"></com.everyoo.zhbj5.view.RefreshListView>
 
 
     <!-- <com.itheima.zhbj52.view.RefreshListView

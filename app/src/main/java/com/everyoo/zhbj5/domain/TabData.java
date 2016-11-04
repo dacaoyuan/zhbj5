@@ -22,8 +22,8 @@ public class TabData {
         public String more;
         public String countcommenturl;
         public String title;
-        public ArrayList<NewsData> news;
-        public ArrayList<TopNewsData> topnews;
+        public ArrayList<NewsTab> news;
+        public ArrayList<NewsData> topnews;
 
         @Override
         public String toString() {
@@ -60,7 +60,7 @@ public class TabData {
         }
     }
 
-    public class TopNewsData {
+    public class NewsData {
         public boolean comment;
         public String commentlist;
         public String commenturl;
