@@ -3,14 +3,17 @@ package com.everyoo.zhbj5.base;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -21,6 +24,7 @@ import com.everyoo.zhbj5.R;
 import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.domain.TabData;
 import com.everyoo.zhbj5.global.GlobalContants;
+import com.everyoo.zhbj5.utils.PrefUtils;
 import com.everyoo.zhbj5.utils.ToastUtils;
 import com.everyoo.zhbj5.view.RefreshListView;
 import com.google.gson.Gson;
@@ -64,6 +68,8 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
 
     private ArrayList<TabData.NewsData> topnews;
     private ArrayList<TabData.NewsTab> newsDatas;
+    private String moreUrl;
+    private MyadAdapter myadAdapter;
     //private ArrayList<TabData.NewsData> newsDatas;
 
 
@@ -90,11 +96,45 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
 
             @Override
             public void onLoadMore() {
+                Log.i(TAG, "onLoadMore: moreUrl=" + moreUrl);
+                if (moreUrl != null) {
+                    getMoreDataFromServer();
+                } else {
+                    ToastUtils.showToast(mActivity, "last pager!");
+                    Log.i(TAG, "onLoadMore: last pager!");
+                    listView.onRefreshComplete(false);
+                }
+            }
+        });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String ids = PrefUtils.getString(mActivity, "read_ids", "");
+                String readIds = ids + newsDatas.get(position).id;
+                if (!ids.contains(readIds)) {
+                    ids = ids + readIds + ",";
+                    PrefUtils.setString(mActivity, "read_ids", ids);
+                }
+
+                // myadAdapter.notifyDataSetChanged();
+                changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
+
+                //ToastUtils.showToast(mActivity, position + "");
             }
         });
 
         return view;
+    }
+
+
+    /**
+     * 改变已读新闻的颜色
+     */
+    private void changeReadState(View view) {
+        TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        tvTitle.setTextColor(Color.GRAY);
     }
 
     @Override
@@ -118,7 +158,7 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                     JSONObject jsonObject = new JSONObject(result);
                     Log.i(TAG, "onSuccess: retcode= " + jsonObject.optInt("retcode"));
                     if (jsonObject.optInt("retcode") == 200) {
-                        parseDate(result);//解析数据
+                        parseDate(result, false);//解析数据
                     }
 
                 } catch (JSONException e) {
@@ -131,6 +171,7 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 ToastUtils.showToast(mActivity, "访问失败");
+                listView.onRefreshComplete(true);
             }
 
             @Override
@@ -141,7 +182,54 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
             @Override
             public void onFinished() {
 
+                listView.onRefreshComplete(true);
+                progressdialog.cancel();
+            }
+        });
 
+    }
+
+    private void getMoreDataFromServer() {
+        progressdialog = new ProgressDialog(mActivity);
+        progressdialog.setMessage("loading...");
+        progressdialog.show();
+
+        String url = moreUrl;
+        RequestParams params = new RequestParams(url);
+        Log.i(TAG, "getDataFromServer: params=" + params);
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                ToastUtils.showToast(mActivity, "访问成功");
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    Log.i(TAG, "onSuccess: retcode= " + jsonObject.optInt("retcode"));
+                    if (jsonObject.optInt("retcode") == 200) {
+                        parseDate(result, true);//解析数据
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                listView.onRefreshComplete(true);
+                progressdialog.cancel();
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                ToastUtils.showToast(mActivity, "访问失败");
+                listView.onRefreshComplete(true);
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+                listView.onRefreshComplete(true);
                 progressdialog.cancel();
             }
         });
@@ -149,29 +237,43 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
     }
 
 
-    private void parseDate(String result) {
+    private void parseDate(String result, boolean isMore) {
         Gson gson = new Gson();
         tabData = gson.fromJson(result, TabData.class);
         // Log.i(TAG, "parseDate: = " + tabData);
 
-
-        newsViewPager.setAdapter(new newsPagerAdapter());
-        topnews = tabData.data.topnews;
-        if (topnews != null) {
-            topTitle.setText(topnews.get(0).title);
-            newsViewPager.addOnPageChangeListener(this);
-            indicator.setViewPager(newsViewPager);
-            // indicator.onPageSelected(0);//让指示器重新定位到第一个点  我发现不调用也能实现功能。
+        moreUrl = tabData.data.more;
+        if (!TextUtils.isEmpty(moreUrl)) {
+            moreUrl = GlobalContants.SERVER_URL + tabData.data.more;
         } else {
-            Log.i(TAG, "topnews is null ");
+            moreUrl = null;
         }
 
-        newsDatas = tabData.data.news;
-        if (newsDatas != null) {
-            listView.setAdapter(new MyadAdapter());
-        } else {
-            Log.i(TAG, "newsDatas is null ");
+        if (!isMore) {
+            newsViewPager.setAdapter(new newsPagerAdapter());
+            topnews = tabData.data.topnews;
+            if (topnews != null) {
+                topTitle.setText(topnews.get(0).title);
+                newsViewPager.addOnPageChangeListener(this);
+                indicator.setViewPager(newsViewPager);
+                // indicator.onPageSelected(0);//让指示器重新定位到第一个点  我发现不调用也能实现功能。
+            } else {
+                Log.i(TAG, "topnews is null ");
+            }
+
+            newsDatas = tabData.data.news;
+            if (newsDatas != null) {
+                myadAdapter = new MyadAdapter();
+                listView.setAdapter(myadAdapter);
+            } else {
+                Log.i(TAG, "newsDatas is null ");
+            }
+        } else {//如果是加载下一页数据，将数据追加给原来的list集合，也就是newsDatas
+            ArrayList<TabData.NewsTab> news = tabData.data.news;
+            newsDatas.addAll(news);
+            myadAdapter.notifyDataSetChanged();
         }
+
 
     }
 
@@ -282,6 +384,16 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
             //Log.i(TAG, "getView: listimage=" + imgUrl);
             setPic();
             x.image().bind(holer.image, imgUrl, options);
+
+            String readId = PrefUtils.getString(mActivity, "read_ids", "");
+            if (readId.contains(newsDatas.get(position).id + "")) {
+                holer.tvTitle.setTextColor(Color.BLUE);
+                holer.tvDate.setTextColor(Color.BLUE);
+            } else {
+                holer.tvTitle.setTextColor(Color.BLACK);
+                holer.tvDate.setTextColor(Color.BLACK);
+            }
+
 
             return convertView;
         }
