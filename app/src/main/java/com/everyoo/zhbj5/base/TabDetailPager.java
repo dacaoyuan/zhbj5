@@ -3,6 +3,7 @@ package com.everyoo.zhbj5.base;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.everyoo.zhbj5.NewsDetailActivity;
 import com.everyoo.zhbj5.R;
 import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.domain.TabData;
@@ -121,7 +123,12 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                 // myadAdapter.notifyDataSetChanged();
                 changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
 
-                //ToastUtils.showToast(mActivity, position + "");
+                String mUrl = GlobalContants.SERVER_URL + processString(newsDatas.get(position).url);
+
+                Intent intent = new Intent(mActivity, NewsDetailActivity.class);
+                intent.putExtra("list_url", mUrl);
+                mActivity.startActivity(intent);
+
             }
         });
 

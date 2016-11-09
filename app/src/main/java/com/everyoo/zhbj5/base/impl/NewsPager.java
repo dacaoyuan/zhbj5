@@ -2,6 +2,7 @@ package com.everyoo.zhbj5.base.impl;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ import com.everyoo.zhbj5.base.menudetail.TopicMenuDetailPager;
 import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.fragment.LeftMenuFregment;
 import com.everyoo.zhbj5.global.GlobalContants;
+import com.everyoo.zhbj5.utils.CacheUtils;
+import com.everyoo.zhbj5.utils.MD5Util;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -54,9 +57,13 @@ public class NewsPager extends BasePager {
         tvTile.setText("新闻");
         setSlidingMenuEnable(true);
 
-        getDataFromService();
-
-
+        String myCache = CacheUtils.getCache(GlobalContants.CATEGORIES_URL, mActivity);
+        Log.i(TAG, "initData: myCache=" + myCache);
+        if (!TextUtils.isEmpty(myCache)) {
+            parseData(myCache);
+        } //else {
+            getDataFromService();
+      //  }
     }
 
 
@@ -86,6 +93,9 @@ public class NewsPager extends BasePager {
 
 
                 parseData(result);
+               // String md5Url = MD5Util.get32MD5Str(GlobalContants.CATEGORIES_URL);
+               // Log.i(TAG, "onSuccess: md5Url=" + md5Url);
+                CacheUtils.setCache(GlobalContants.CATEGORIES_URL, result, mActivity);//设置缓存，其实也就是把整个json串，保存到SharedPreferences中
 
                 progressdialog.cancel();
             }
