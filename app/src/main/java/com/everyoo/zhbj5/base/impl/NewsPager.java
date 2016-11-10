@@ -62,8 +62,8 @@ public class NewsPager extends BasePager {
         if (!TextUtils.isEmpty(myCache)) {
             parseData(myCache);
         } //else {
-            getDataFromService();
-      //  }
+        getDataFromService();
+        //  }
     }
 
 
@@ -81,7 +81,7 @@ public class NewsPager extends BasePager {
             @Override
             public void onSuccess(String result) {
 
-                Log.i(TAG, "onSuccess: result=" + result);
+                Log.i(TAG, "onSuccess:");
 
                 try {
                     JSONObject jsonObject = new JSONObject(result);
@@ -93,8 +93,8 @@ public class NewsPager extends BasePager {
 
 
                 parseData(result);
-               // String md5Url = MD5Util.get32MD5Str(GlobalContants.CATEGORIES_URL);
-               // Log.i(TAG, "onSuccess: md5Url=" + md5Url);
+                // String md5Url = MD5Util.get32MD5Str(GlobalContants.CATEGORIES_URL);
+                // Log.i(TAG, "onSuccess: md5Url=" + md5Url);
                 CacheUtils.setCache(GlobalContants.CATEGORIES_URL, result, mActivity);//设置缓存，其实也就是把整个json串，保存到SharedPreferences中
 
                 progressdialog.cancel();
@@ -102,6 +102,7 @@ public class NewsPager extends BasePager {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+                Log.i(TAG, "onError: ");
                 progressdialog.cancel();
 
             }
@@ -131,7 +132,7 @@ public class NewsPager extends BasePager {
         baseMenuDetailArrayList = new ArrayList<>();
         baseMenuDetailArrayList.add(new NewsMenuDetailPager(mActivity, newsData.data.get(0).children));
         baseMenuDetailArrayList.add(new TopicMenuDetailPager(mActivity));
-        baseMenuDetailArrayList.add(new PhotoMenuDetailPager(mActivity));
+        baseMenuDetailArrayList.add(new PhotoMenuDetailPager(mActivity,imagePhotosButton));
         baseMenuDetailArrayList.add(new InteractMenuDetailPager(mActivity));
 
 
