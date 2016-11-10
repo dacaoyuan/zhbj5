@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -26,9 +28,11 @@ import com.everyoo.zhbj5.R;
 import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.domain.TabData;
 import com.everyoo.zhbj5.global.GlobalContants;
+import com.everyoo.zhbj5.utils.CacheUtils;
 import com.everyoo.zhbj5.utils.PrefUtils;
 import com.everyoo.zhbj5.utils.ToastUtils;
 import com.everyoo.zhbj5.view.RefreshListView;
+import com.everyoo.zhbj5.view.TopNewsTouchListener;
 import com.google.gson.Gson;
 import com.google.gson.annotations.Until;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -73,6 +77,9 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
     private String moreUrl;
     private MyadAdapter myadAdapter;
     //private ArrayList<TabData.NewsData> newsDatas;
+
+
+    private Handler handler;
 
 
     public TabDetailPager(Activity activity, NewsData.NewsTabData children) {
@@ -146,6 +153,20 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
 
     @Override
     public void initData() {
+        String myCache = CacheUtils.getCache(GlobalContants.SERVER_URL + childrenDate.url, mActivity);
+        Log.i(TAG, "initData: myCache= " + myCache);
+        if (!TextUtils.isEmpty(myCache)) {
+            try {
+                JSONObject jsonObject = new JSONObject(myCache);
+                Log.i(TAG, "onSuccess: retcode= " + jsonObject.optInt("retcode"));
+                if (jsonObject.optInt("retcode") == 200) {
+                    parseDate(myCache, false);//解析数据
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         getDataFromServer();
     }
 
@@ -166,6 +187,10 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                     Log.i(TAG, "onSuccess: retcode= " + jsonObject.optInt("retcode"));
                     if (jsonObject.optInt("retcode") == 200) {
                         parseDate(result, false);//解析数据
+
+
+                        CacheUtils.setCache(GlobalContants.SERVER_URL + childrenDate.url, result, mActivity);
+
                     }
 
                 } catch (JSONException e) {
@@ -282,6 +307,30 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
         }
 
 
+        /**
+         * 自动轮播条
+         *
+         */
+        if (handler == null) {
+            handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+
+                    int mCurrentItem = newsViewPager.getCurrentItem();
+
+                    if (mCurrentItem < tabData.data.topnews.size() - 1) {
+                        mCurrentItem++;
+                    } else {
+                        mCurrentItem = 0;
+                    }
+                    newsViewPager.setCurrentItem(mCurrentItem);
+                    handler.sendEmptyMessageDelayed(0, 3000);
+                }
+            };
+            handler.sendEmptyMessageDelayed(0, 3000);
+        }
+
+
     }
 
     @Override
@@ -325,6 +374,15 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
             setPic();
             x.image().bind(imageView, imageUrl, options);
             container.addView(imageView);
+
+            imageView.setOnTouchListener(new TopNewsTouchListener(handler));//图片设置触摸监听,有可能拦截onClick事件
+           /* imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });*/
+
             return imageView;
         }
 
