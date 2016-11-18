@@ -1,13 +1,12 @@
 package com.everyoo.zhbj5.fragment;
 
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import com.everyoo.zhbj5.R;
+import com.everyoo.zhbj5.adapter.MyContentAdapter;
 import com.everyoo.zhbj5.base.BasePager;
 import com.everyoo.zhbj5.base.impl.GovAffairsPager;
 import com.everyoo.zhbj5.base.impl.HomePager;
@@ -29,6 +28,8 @@ public class ContentMenuFregment extends BaseFregment {
     private RadioGroup radioGroup;
 
     private ArrayList<BasePager> basePagersList;
+
+    @ViewInject(R.id.id_vp)
     private ViewPager viewPager;
 
 
@@ -36,8 +37,6 @@ public class ContentMenuFregment extends BaseFregment {
     public View initViews() {
         //View view = View.inflate(mActivity, R.layout.fragment_content, null);
         View view = LayoutInflater.from(mActivity).inflate(R.layout.fragment_content, null);
-        //radioGroup = (RadioGroup) view.findViewById(R.id.rg_group);
-        viewPager = (ViewPager) view.findViewById(R.id.id_vp);
         x.view().inject(this, view);
 
 
@@ -63,7 +62,7 @@ public class ContentMenuFregment extends BaseFregment {
         basePagersList.add(new SettingPager(mActivity));
 
 
-        viewPager.setAdapter(new MyContentAdapter());
+        viewPager.setAdapter(new MyContentAdapter(basePagersList));
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -110,33 +109,6 @@ public class ContentMenuFregment extends BaseFregment {
 
         basePagersList.get(0).initData();
 
-    }
-
-
-    class MyContentAdapter extends PagerAdapter {
-
-
-        @Override
-        public int getCount() {
-            return basePagersList.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            BasePager pager = basePagersList.get(position);
-            container.addView(basePagersList.get(position).rootView);
-            return basePagersList.get(position).rootView;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-        }
     }
 
 

@@ -22,7 +22,7 @@ public class TopNewsTouchListener implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 System.out.println("按下");
-                mHandler.removeCallbacksAndMessages(null);// 删除Handler中的所有消息
+               mHandler.removeCallbacksAndMessages(null);// 删除Handler中的所有消息
 
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -31,7 +31,7 @@ public class TopNewsTouchListener implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_UP:
                 System.out.println("抬起");
-                mHandler.sendEmptyMessageDelayed(0, 3000);
+               mHandler.sendEmptyMessageDelayed(0, 3000);
                 break;
 
             default:

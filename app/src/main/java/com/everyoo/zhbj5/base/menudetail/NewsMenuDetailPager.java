@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.everyoo.zhbj5.MainActivity;
 import com.everyoo.zhbj5.R;
+import com.everyoo.zhbj5.adapter.NewsMenuDetailAdapter;
 import com.everyoo.zhbj5.base.BaseMenuDetailPager;
 import com.everyoo.zhbj5.base.TabDetailPager;
 import com.everyoo.zhbj5.domain.NewsData;
@@ -30,10 +31,6 @@ public class NewsMenuDetailPager extends BaseMenuDetailPager implements ViewPage
     private ArrayList<NewsData.NewsTabData> mChildren;
     private TabPageIndicator indicator;
     private ImageButton btnNext;
-
-    private String[] newsTitle = {"北京", "中国", "国际", "体育",
-            "生活", "旅游", "科技", "军事", "时尚",
-            "财经", "袁培凯", "汽车"};
 
     private ArrayList<String> newTitle = new ArrayList<>();
 
@@ -71,12 +68,7 @@ public class NewsMenuDetailPager extends BaseMenuDetailPager implements ViewPage
         }
 
 
-        for (int i = 0; i < newsTitle.length; i++) {
-            newTitle.add(newsTitle[i]);
-        }
-
-
-        mViewPager.setAdapter(new MyAdapter());
+        mViewPager.setAdapter(new NewsMenuDetailAdapter(mPagerList, mChildren));
         indicator.setViewPager(mViewPager);
         indicator.setOnPageChangeListener(this);
 
@@ -110,39 +102,6 @@ public class NewsMenuDetailPager extends BaseMenuDetailPager implements ViewPage
 
     }
 
-
-    class MyAdapter extends PagerAdapter {
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            // return mChildren.get(position).title;
-            return newTitle.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mPagerList.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-
-            container.addView(mPagerList.get(position).mRootView);
-            mPagerList.get(position).initData();
-            return mPagerList.get(position).mRootView;
-        }
-
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-        }
-    }
 
 
 }

@@ -25,12 +25,14 @@ import android.widget.Toast;
 
 import com.everyoo.zhbj5.NewsDetailActivity;
 import com.everyoo.zhbj5.R;
+import com.everyoo.zhbj5.adapter.TabDetailAdapter;
 import com.everyoo.zhbj5.domain.NewsData;
 import com.everyoo.zhbj5.domain.TabData;
 import com.everyoo.zhbj5.global.GlobalContants;
 import com.everyoo.zhbj5.utils.CacheUtils;
 import com.everyoo.zhbj5.utils.PrefUtils;
 import com.everyoo.zhbj5.utils.ToastUtils;
+import com.everyoo.zhbj5.utils.Xutils;
 import com.everyoo.zhbj5.view.RefreshListView;
 import com.everyoo.zhbj5.view.TopNewsTouchListener;
 import com.google.gson.Gson;
@@ -61,7 +63,6 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
 
     @ViewInject(R.id.vp_news)
     private ViewPager newsViewPager;
-    private ImageOptions options;
 
     @ViewInject(R.id.title)
     private TextView topTitle;
@@ -75,11 +76,12 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
     private ArrayList<TabData.NewsData> topnews;
     private ArrayList<TabData.NewsTab> newsDatas;
     private String moreUrl;
-    private MyadAdapter myadAdapter;
+    private TabDetailAdapter myadAdapter;
     //private ArrayList<TabData.NewsData> newsDatas;
 
 
     private Handler handler;
+    private NewsPagerAdapter pagerAdapter;
 
 
     public TabDetailPager(Activity activity, NewsData.NewsTabData children) {
@@ -127,10 +129,12 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                     PrefUtils.setString(mActivity, "read_ids", ids);
                 }
 
+
+
                 // myadAdapter.notifyDataSetChanged();
                 changeReadState(view);// 实现局部界面刷新, 这个view就是被点击的item布局对象
 
-                String mUrl = GlobalContants.SERVER_URL + processString(newsDatas.get(position).url);
+                String mUrl = GlobalContants.SERVER_URL + Xutils.processString(newsDatas.get(position).url);
 
                 Intent intent = new Intent(mActivity, NewsDetailActivity.class);
                 intent.putExtra("list_url", mUrl);
@@ -138,6 +142,7 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
 
             }
         });
+
 
         return view;
     }
@@ -281,53 +286,67 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
             moreUrl = null;
         }
 
+
         if (!isMore) {
-            newsViewPager.setAdapter(new newsPagerAdapter());
+
+
             topnews = tabData.data.topnews;
             if (topnews != null) {
+                pagerAdapter = new NewsPagerAdapter();
+                newsViewPager.setAdapter(pagerAdapter);
                 topTitle.setText(topnews.get(0).title);
                 newsViewPager.addOnPageChangeListener(this);
                 indicator.setViewPager(newsViewPager);
-                // indicator.onPageSelected(0);//让指示器重新定位到第一个点  我发现不调用也能实现功能。
+                //indicator.onPageSelected(0);//让指示器重新定位到第一个点  我发现不调用也能实现功能。
             } else {
                 Log.i(TAG, "topnews is null ");
             }
 
+
             newsDatas = tabData.data.news;
             if (newsDatas != null) {
-                myadAdapter = new MyadAdapter();
+                myadAdapter = new TabDetailAdapter(newsDatas, mActivity,pagerAdapter);
                 listView.setAdapter(myadAdapter);
             } else {
                 Log.i(TAG, "newsDatas is null ");
             }
+
+
+
+
+
+
+
+
+
+            /**
+             * 自动轮播条
+             *
+             */
+            if (handler == null) {
+                handler = new Handler() {
+                    @Override
+                    public void handleMessage(Message msg) {
+
+                        int mCurrentItem = newsViewPager.getCurrentItem();
+
+                        if (mCurrentItem < topnews.size() - 1) {
+                            mCurrentItem++;
+                        } else {
+                            mCurrentItem = 0;
+                        }
+                        newsViewPager.setCurrentItem(mCurrentItem);
+                        handler.sendEmptyMessageDelayed(0, 3000);
+                    }
+                };
+                handler.sendEmptyMessageDelayed(0, 3000);
+            }
+
+
         } else {//如果是加载下一页数据，将数据追加给原来的list集合，也就是newsDatas
             ArrayList<TabData.NewsTab> news = tabData.data.news;
             newsDatas.addAll(news);
             myadAdapter.notifyDataSetChanged();
-        }
-
-
-        /**
-         * 自动轮播条
-         *
-         */
-        if (handler == null) {
-            handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-
-                    int mCurrentItem = newsViewPager.getCurrentItem();
-
-                    if (mCurrentItem < tabData.data.topnews.size() - 1) {
-                        mCurrentItem++;
-                    } else {
-                        mCurrentItem = 0;
-                    }
-                    newsViewPager.setCurrentItem(mCurrentItem);
-                    handler.sendEmptyMessageDelayed(0, 3000);
-                }
-            };
-            handler.sendEmptyMessageDelayed(0, 3000);
         }
 
 
@@ -348,10 +367,7 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
 
     }
 
-    private class newsPagerAdapter extends PagerAdapter {
-
-        public newsPagerAdapter() {
-        }
+    public class NewsPagerAdapter extends PagerAdapter {
 
         @Override
         public int getCount() {
@@ -367,12 +383,9 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             ImageView imageView = new ImageView(mActivity);
-            // Log.i(TAG, "instantiateItem: " + tabData.data.topnews.get(position).topimage);
-            //Log.i(TAG, "instantiateItem:url= " + processString(tabData.data.topnews.get(position).topimage));
-            String imageUrl = GlobalContants.SERVER_URL + processString(tabData.data.topnews.get(position).topimage);
+            String imageUrl = GlobalContants.SERVER_URL + Xutils.processString(tabData.data.topnews.get(position).topimage);
             // imageView.setScaleType(ImageView.ScaleType.FIT_XY);//基于控件大小去填充
-            setPic();
-            x.image().bind(imageView, imageUrl, options);
+            x.image().bind(imageView, imageUrl, Xutils.setPic());
             container.addView(imageView);
 
             imageView.setOnTouchListener(new TopNewsTouchListener(handler));//图片设置触摸监听,有可能拦截onClick事件
@@ -392,92 +405,5 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
         }
     }
 
-    /**
-     * 截取字符串
-     *
-     * @return
-     */
-    private String processString(String url) {
-        String mUrl = url.replace("http://10.0.2.2:8080/zhbj", "");
-        return mUrl;
-    }
-
-
-    public class MyadAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return newsDatas.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return getItem(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            //   View view;
-            ViewHolder holer;
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(mActivity).inflate(R.layout.list_news_item, null);
-                holer = new ViewHolder();
-
-                holer.image = (ImageView) convertView.findViewById(R.id.iv_pic);
-                holer.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
-                holer.tvDate = (TextView) convertView.findViewById(R.id.tv_date);
-                convertView.setTag(holer);
-
-                 /* ImageView imageView = (ImageView) view.findViewById(R.id.iv_pic);
-                TextView textTitle = (TextView) view.findViewById(R.id.tv_title);
-                TextView textData = (TextView) view.findViewById(R.id.tv_date);
-                textTitle.setText(newsDatas.get(position).title);
-                textData.setText(newsDatas.get(position).pubdate);*/
-            } else {
-                // view = convertView;
-                holer = (ViewHolder) convertView.getTag();
-            }
-            holer.tvTitle.setText(newsDatas.get(position).title);
-            holer.tvDate.setText(newsDatas.get(position).pubdate);
-            String imgUrl = GlobalContants.SERVER_URL + processString(newsDatas.get(position).listimage);
-            //Log.i(TAG, "getView: listimage=" + imgUrl);
-            setPic();
-            x.image().bind(holer.image, imgUrl, options);
-
-            String readId = PrefUtils.getString(mActivity, "read_ids", "");
-            if (readId.contains(newsDatas.get(position).id + "")) {
-                holer.tvTitle.setTextColor(Color.BLUE);
-                holer.tvDate.setTextColor(Color.BLUE);
-            } else {
-                holer.tvTitle.setTextColor(Color.BLACK);
-                holer.tvDate.setTextColor(Color.BLACK);
-            }
-
-
-            return convertView;
-        }
-    }
-
-    public static class ViewHolder {
-        public TextView tvTitle;
-        public TextView tvDate;
-        public ImageView image;
-    }
-
-
-    private void setPic() {
-        options = new ImageOptions.Builder()
-                .setFadeIn(true)
-                .setFailureDrawableId(R.mipmap.topnews_item_default)
-                .setLoadingDrawableId(R.mipmap.topnews_item_default)
-                .setImageScaleType(ImageView.ScaleType.FIT_XY)
-                .build();
-    }
 
 }

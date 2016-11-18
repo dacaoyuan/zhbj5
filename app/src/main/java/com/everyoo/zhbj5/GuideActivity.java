@@ -1,14 +1,14 @@
 package com.everyoo.zhbj5;
 
 import android.content.Intent;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.everyoo.zhbj5.adapter.GuideAdapter;
 
 import java.util.ArrayList;
 
@@ -29,8 +29,7 @@ public class GuideActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.vp_guide);
         startBtn = (Button) findViewById(R.id.button);
         intView();
-        viewPager.setAdapter(new GuideAdapter());
-
+        viewPager.setAdapter(new GuideAdapter(imageViewArrayList));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -73,36 +72,6 @@ public class GuideActivity extends AppCompatActivity {
             ImageView imag = new ImageView(this);
             imag.setBackgroundResource(imageViews[i]);
             imageViewArrayList.add(imag);
-        }
-    }
-
-
-    class GuideAdapter extends PagerAdapter {
-
-
-        @Override
-        public int getCount() {
-            System.out.println("GuideAdapter.getCount");
-            return imageViewArrayList.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            System.out.println("GuideAdapter.isViewFromObject");
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(imageViewArrayList.get(position));
-            System.out.println("GuideAdapter.instantiateItem");
-            return imageViewArrayList.get(position);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            System.out.println("GuideAdapter.destroyItem");
-            container.removeView((View) object);
         }
     }
 }
