@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.everyoo.zhbj5.R;
+import com.everyoo.zhbj5.adapter.PhotoAdapter;
 import com.everyoo.zhbj5.base.BaseMenuDetailPager;
 import com.everyoo.zhbj5.domain.PhotosData;
 import com.everyoo.zhbj5.global.GlobalContants;
@@ -158,7 +159,7 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
 
         photoNewsArrayList = photosData.data.news;
         if (photoNewsArrayList != null) {
-            photoAdapter = new PhotoAdapter();
+            photoAdapter = new PhotoAdapter(photoNewsArrayList, mActivity);
             listView.setAdapter(photoAdapter);
             gridView.setAdapter(photoAdapter);
         } else {
@@ -166,63 +167,6 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
         }
 
 
-    }
-
-
-    class PhotoAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return photoNewsArrayList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return getItem(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = View.inflate(mActivity, R.layout.list_photo_item, null);
-                holder.tvTitle = (TextView) convertView.findViewById(R.id.tv_title);
-                holder.imageView = (ImageView) convertView.findViewById(R.id.iv_pic);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-
-            holder.tvTitle.setText(photoNewsArrayList.get(position).title);
-            String imaUrl = GlobalContants.SERVER_URL + processString(photoNewsArrayList.get(position).listimage);
-            x.image().bind(holder.imageView, imaUrl);
-
-
-            return convertView;
-        }
-    }
-
-    static class ViewHolder {
-        public TextView tvTitle;
-        public ImageView imageView;
-
-    }
-
-    /**
-     * 截取字符串
-     *
-     * @return
-     */
-    private String processString(String url) {
-        String mUrl = url.replace("http://10.0.2.2:8080/zhbj", "");
-        return mUrl;
     }
 
 

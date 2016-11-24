@@ -311,14 +311,6 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                 Log.i(TAG, "newsDatas is null ");
             }
 
-
-
-
-
-
-
-
-
             /**
              * 自动轮播条
              *

@@ -1,11 +1,19 @@
 package com.everyoo.zhbj5;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.view.KeyEvent;
 
 import com.everyoo.zhbj5.fragment.ContentMenuFregment;
 import com.everyoo.zhbj5.fragment.LeftMenuFregment;
+import com.everyoo.zhbj5.utils.DialogUtil;
+import com.everyoo.zhbj5.utils.SDDialogUtil;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
@@ -53,6 +61,29 @@ public class MainActivity extends SlidingFragmentActivity {
 
 
         return contentMenuFregment;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        System.out.println("MainActivity.onKeyDown");
+        new DialogUtil(this).alert("退出", "要退出应用吗？");
+        return true;
+    }
+
+
+    public void test() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("ni");
+        builder.setMessage("fasdfdas");
+        builder.setNegativeButton("", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        Dialog dialog = builder.create();
+        dialog.show();
     }
 
 

@@ -1,5 +1,7 @@
 package com.everyoo.zhbj5.utils;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.widget.ImageView;
 
 import com.everyoo.zhbj5.R;
@@ -31,6 +33,9 @@ public class Xutils {
 
         return options;
     }
+
+
+
 
 
 }
