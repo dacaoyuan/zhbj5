@@ -27,6 +27,12 @@ import org.xutils.x;
 
 import java.util.ArrayList;
 
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+import in.srain.cube.views.ptr.header.MaterialHeader;
+import in.srain.cube.views.ptr.util.PtrLocalDisplay;
+
 /**
  * Created by Administrator on 2016-9-22.
  */
@@ -38,6 +44,8 @@ public class GovAffairsPager extends BasePager {
 
     private ListView listView;
     private View view;
+
+    private PtrFrameLayout ptr;
 
 
     public GovAffairsPager(Activity activity) {
@@ -63,10 +71,41 @@ public class GovAffairsPager extends BasePager {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mActivity,arrayList.get(position),Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, arrayList.get(position), Toast.LENGTH_LONG).show();
             }
         });
 
+        ptr = (PtrFrameLayout) view.findViewById(R.id.ptr_frame);
+        final MaterialHeader header = new MaterialHeader(mActivity);
+        header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
+        ptr.setHeaderView(header);
+        ptr.addPtrUIHandler(header);
+        ptr.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                System.out.println("GovAffairsPager.checkCanDoRefresh");
+                if (listView.getFirstVisiblePosition() == 0 && listView.getChildAt(0).getTop() == 0) {
+                    return true;
+                }
+                return false;
+                // return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                System.out.println("GovAffairsPager.onRefreshBegin");
+                getFromService();
+                ptr.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("GovAffairsPager.run postDelayed");
+                        ptr.refreshComplete();
+
+                    }
+                }, 1500);//这个2秒的意思就是，2秒后，头布局隐藏掉。
+
+            }
+        });
 
 
         getFromService();

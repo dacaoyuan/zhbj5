@@ -201,7 +201,7 @@ public class TabDetailPager extends BaseMenuDetailPager implements ViewPager.OnP
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                listView.onRefreshComplete(true);
+                listView.onRefreshComplete(true);//收起下拉刷新的控件
                 progressdialog.cancel();
             }
 
