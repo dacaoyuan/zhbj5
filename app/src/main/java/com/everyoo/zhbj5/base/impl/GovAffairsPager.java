@@ -47,6 +47,8 @@ public class GovAffairsPager extends BasePager {
 
     private PtrFrameLayout ptr;
 
+    private GovAdapter govAdapter;
+
 
     public GovAffairsPager(Activity activity) {
         super(activity);
@@ -76,42 +78,14 @@ public class GovAffairsPager extends BasePager {
         });
 
         ptr = (PtrFrameLayout) view.findViewById(R.id.ptr_frame);
-        final MaterialHeader header = new MaterialHeader(mActivity);
-        header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
-        ptr.setHeaderView(header);
-        ptr.addPtrUIHandler(header);
-        ptr.setPtrHandler(new PtrHandler() {
-            @Override
-            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                System.out.println("GovAffairsPager.checkCanDoRefresh");
-                if (listView.getFirstVisiblePosition() == 0 && listView.getChildAt(0).getTop() == 0) {
-                    return true;
-                }
-                return false;
-                // return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
-            }
 
-            @Override
-            public void onRefreshBegin(PtrFrameLayout frame) {
-                System.out.println("GovAffairsPager.onRefreshBegin");
-                getFromService();
-                ptr.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println("GovAffairsPager.run postDelayed");
-                        ptr.refreshComplete();
-
-                    }
-                }, 1500);//这个2秒的意思就是，2秒后，头布局隐藏掉。
-
-            }
-        });
-
-
+        pullRefresh();
         getFromService();
     }
 
     private Handler handler = new Handler() {
+
+
         @Override
         public void handleMessage(Message msg) {
             frameLayout.removeAllViews();
@@ -119,7 +93,9 @@ public class GovAffairsPager extends BasePager {
             System.out.println("GovAffairsPager.handleMessage");
           /*  ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<String>(mActivity, R.layout.gov_list_item, arrayList);
             listView.setAdapter(stringArrayAdapter);*/
-            listView.setAdapter(new GovAdapter());
+            govAdapter = new GovAdapter();
+            listView.setAdapter(govAdapter);
+
 
         }
     };
@@ -241,4 +217,49 @@ public class GovAffairsPager extends BasePager {
 
 
     }
+
+
+    public void pullRefresh() {
+        final MaterialHeader header = new MaterialHeader(mActivity);
+        header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
+        ptr.setHeaderView(header);
+        ptr.addPtrUIHandler(header);
+        ptr.setPinContent(true);//刷新时，保持内容不动，仅头部下移,默认,false
+        ptr.setPtrHandler(new PtrHandler() {
+
+            /**
+             * 检查是否可以执行下拉刷新，比如列表为空或者列表第一项在最上面时,或者listView第一个列表项不在顶不时，都会返回false。
+             */
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                /*System.out.println("GovAffairsPager.checkCanDoRefresh");
+                if (listView.getFirstVisiblePosition() == 0 && listView.getChildAt(0).getTop() == 0) {
+                    return true;//返回真，下拉刷新的头部居，才能拉出来
+                }
+                return false;*/
+                 return PtrDefaultHandler.checkContentCanBePulledDown(frame, listView, header);
+            }
+
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                System.out.println("GovAffairsPager.onRefreshBegin");
+                getFromService();
+                ptr.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("GovAffairsPager.run postDelayed");
+                        govAdapter.notifyDataSetChanged();
+                        ptr.refreshComplete();
+                        //listView.smoothScrollToPosition(0);//能让listview 平滑滚动到 0 位置
+
+                    }
+                }, 1500);//这个2秒的意思就是，2秒后，头布局隐藏掉。
+
+            }
+        });
+
+    }
+
+
 }
