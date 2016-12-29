@@ -30,6 +30,12 @@ import org.xutils.x;
 
 import java.util.ArrayList;
 
+import in.srain.cube.views.ptr.PtrDefaultHandler;
+import in.srain.cube.views.ptr.PtrFrameLayout;
+import in.srain.cube.views.ptr.PtrHandler;
+import in.srain.cube.views.ptr.header.MaterialHeader;
+import in.srain.cube.views.ptr.util.PtrLocalDisplay;
+
 /**
  * Created by Administrator on 2016-10-6.
  */
@@ -40,7 +46,9 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
     private ListView listView;
 
     //  @ViewInject(R.id.gv_photo)
-    private GridView gridView;
+    //private GridView gridView;
+    private PtrFrameLayout ptr;
+
 
     private PhotoAdapter photoAdapter;
     private ProgressDialog progressdialog;
@@ -71,12 +79,12 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
         if (isListDisplay) {
             isListDisplay = false;
             listView.setVisibility(View.VISIBLE);
-            gridView.setVisibility(View.GONE);
+          //  gridView.setVisibility(View.GONE);
             btnPhptos.setImageResource(R.mipmap.icon_pic_list_type);
         } else {
             isListDisplay = true;
             listView.setVisibility(View.GONE);
-            gridView.setVisibility(View.VISIBLE);
+           // gridView.setVisibility(View.VISIBLE);
             btnPhptos.setImageResource(R.mipmap.icon_pic_grid_type);
         }
 
@@ -88,7 +96,9 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
         View view = View.inflate(mActivity, R.layout.menu_photo_pager, null);
         //  x.view().inject(view);
         listView = (ListView) view.findViewById(R.id.lv_photo);
-        gridView = (GridView) view.findViewById(R.id.gv_photo);
+       // gridView = (GridView) view.findViewById(R.id.gv_photo);
+
+        ptr = (PtrFrameLayout) view.findViewById(R.id.ptr_frame);
         return view;
     }
 
@@ -101,7 +111,7 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
         if (!TextUtils.isEmpty(mCache)) {
             parseData(mCache);
         }
-
+        pullRefresh();
         getDataFromServer();
     }
 
@@ -161,12 +171,42 @@ public class PhotoMenuDetailPager extends BaseMenuDetailPager {
         if (photoNewsArrayList != null) {
             photoAdapter = new PhotoAdapter(photoNewsArrayList, mActivity);
             listView.setAdapter(photoAdapter);
-            gridView.setAdapter(photoAdapter);
+            //gridView.setAdapter(photoAdapter);
         } else {
             Log.i(TAG, "photoNewsArrayList is null");
         }
 
 
+    }
+
+
+    public void pullRefresh() {
+        final MaterialHeader header = new MaterialHeader(mActivity);
+        header.setPadding(0, PtrLocalDisplay.dp2px(15), 0, 0);
+        ptr.setHeaderView(header);
+        ptr.addPtrUIHandler(header);
+        ptr.setPinContent(true);//刷新时，保持内容不动，仅头部下移,默认,false
+        ptr.setPtrHandler(new PtrHandler() {
+            @Override
+            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
+                return PtrDefaultHandler.checkContentCanBePulledDown(frame, listView, header);
+            }
+
+            @Override
+            public void onRefreshBegin(PtrFrameLayout frame) {
+                getDataFromServer();
+                ptr.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("GovAffairsPager.run postDelayed");
+                        photoAdapter.notifyDataSetChanged();
+                        ptr.refreshComplete();
+                        //listView.smoothScrollToPosition(0);//能让listview 平滑滚动到 0 位置
+
+                    }
+                }, 1500);//这个2秒的意思就是，2秒后，头布局隐藏掉。
+            }
+        });
     }
 
 
